@@ -14,3 +14,6 @@ Route::get('/employees', [EmployeesController::class, 'index']);
 Route::post('/employees', [EmployeesController::class, 'store']);
 Route::put('/employees/{id}', [EmployeesController::class, 'update']);
 Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
+Route::get('/test', function () {
+return response()->json(['message' => 'Test route working']);
+});
