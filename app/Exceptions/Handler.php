@@ -8,12 +8,12 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
-  // ...existing methods...
+    // ...existing methods...
 
-  public function render($request, Throwable $exception)
-  {
-    return response()->json([
-      'error' => $exception->getMessage()
-    ], $exception->getCode() ?: 500);
-  }
+    public function render($request, Throwable $exception)
+    {
+        return response()->json([
+            'error' => $exception->getMessage()
+        ], $exception->getCode() ?: 500);
+    }
 }
