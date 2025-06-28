@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -123,4 +122,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Service Providers
+    |--------------------------------------------------------------------------
+    |
+    | The service providers listed here will be automatically registered
+    | when your application is started. You can add your own services
+    | to this array to have them loaded by the framework.
+    |
+    */
+
+    'providers' => [
+        // ...existing code...
+        App\Providers\RouteServiceProvider::class,
+    ],
 ];
