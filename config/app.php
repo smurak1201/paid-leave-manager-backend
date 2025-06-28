@@ -135,6 +135,6 @@ return [
 
     'providers' => [
         // ...existing code...
-        App\Providers\RouteServiceProvider::class,
+        // App\Providers\RouteServiceProvider::class,
     ],
 ];
