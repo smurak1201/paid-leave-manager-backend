@@ -62,4 +62,29 @@ class LeaveUsageController extends Controller
             return response()->json(['error' => 'DBエラー: ' . $e->getMessage()], 500);
         }
     }
+
+    public function showSummary(Request $request)
+    {
+        $validated = $request->validate([
+            'employee_id' => 'required|exists:employees,employee_id',
+        ]);
+
+        $employee = Employee::where('employee_id', $validated['employee_id'])->first();
+        $usage_dates = LeaveUsage::where('employee_id', $employee->id)->orderBy('used_date')->pluck('used_date');
+        $master = LeaveGrantMaster::orderBy('months')->get();
+
+        $today = now()->toDateString();
+
+        // 集計処理（例: 残日数計算）
+        $summary = [
+            'grantThisYear' => 0, // 仮の値
+            'carryOver' => 0,     // 仮の値
+            'used' => count($usage_dates),
+            'remain' => 0,       // 仮の値
+            'grantDetails' => $master,
+            'usedDates' => $usage_dates,
+        ];
+
+        return response()->json($summary, 200);
+    }
 }
