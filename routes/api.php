@@ -17,3 +17,6 @@ Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
 Route::get('/test', function () {
 return response()->json(['message' => 'Test route working']);
 });
+Route::get('/api/test', function () {
+return response()->json(['message' => 'API Test route working']);
+});
