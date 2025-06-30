@@ -14,7 +14,7 @@
 // 使い方:
 // ・require_onceでこのファイルを読み込むと、$pdoが利用可能になる
 
-$host = 'localhost';
+$host = '172.18.119.226';
 $dbname = 'paid_leave_manager';
 $user = 'plm_user'; // DBユーザー名
 $pass = 'wP[X[dY5UekZ_XWj'; // DBパスワード
