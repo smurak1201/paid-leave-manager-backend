@@ -1,3 +1,5 @@
+<?php
+
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeaveGrantMasterController;
 use App\Http\Controllers\LeaveUsageController;
@@ -15,8 +17,8 @@ Route::post('/employees', [EmployeesController::class, 'store']);
 Route::put('/employees/{id}', [EmployeesController::class, 'update']);
 Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
 Route::get('/test', function () {
-return response()->json(['message' => 'Test route working']);
+    return response()->json(['message' => 'Test route working']);
 });
 Route::get('/api/test', function () {
-return response()->json(['message' => 'API Test route working']);
+    return response()->json(['message' => 'API Test route working']);
 });
