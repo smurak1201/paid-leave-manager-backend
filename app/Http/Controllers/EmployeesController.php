@@ -33,6 +33,7 @@ class EmployeesController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            'employee_id' => 'required|unique:employees,employee_id,' . $id,
             'last_name' => 'required',
             'first_name' => 'required',
             'joined_at' => 'required|date',

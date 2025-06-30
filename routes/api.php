@@ -11,6 +11,8 @@ Route::get('leave-usages', [LeaveUsageController::class, 'index']);
 Route::post('leave-usages', [LeaveUsageController::class, 'store']);
 Route::delete('leave-usages', [LeaveUsageController::class, 'destroy']);
 Route::get('leave-summary', [LeaveUsageController::class, 'showSummary']);
+Route::post('leave-usages/add', [LeaveUsageController::class, 'store']);
+Route::post('leave-usages/delete', [LeaveUsageController::class, 'destroy']);
 
 Route::get('/employees', [EmployeesController::class, 'index']);
 Route::post('/employees', [EmployeesController::class, 'store']);
