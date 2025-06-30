@@ -51,4 +51,42 @@ class EmployeesController extends Controller
         $employee->delete();
         return response()->json(['result' => 'ok']);
     }
+
+    // modeパラメータによる一括処理
+    public function handleMode(Request $request)
+    {
+        $mode = $request->input('mode');
+        if ($mode === 'add') {
+            $validated = $request->validate([
+                'employee_id' => 'required|unique:employees,employee_id',
+                'last_name' => 'required',
+                'first_name' => 'required',
+                'joined_at' => 'required|date',
+            ]);
+            $employee = Employee::create($validated);
+            return response()->json(['result' => 'ok', 'employee' => $employee]);
+        } elseif ($mode === 'edit') {
+            $id = $request->input('id');
+            $validated = $request->validate([
+                'employee_id' => 'required|unique:employees,employee_id,' . $id,
+                'last_name' => 'required',
+                'first_name' => 'required',
+                'joined_at' => 'required|date',
+            ]);
+            $employee = Employee::findOrFail($id);
+            $employee->update($validated);
+            return response()->json(['result' => 'ok', 'employee' => $employee]);
+        } elseif ($mode === 'delete') {
+            $employee_id = $request->input('employee_id');
+            $employee = Employee::where('employee_id', $employee_id)->first();
+            if ($employee) {
+                $employee->delete();
+                return response()->json(['result' => 'ok']);
+            } else {
+                return response()->json(['error' => '該当従業員が見つかりません'], 404);
+            }
+        } else {
+            return response()->json(['error' => '不正なmode指定'], 400);
+        }
+    }
 }

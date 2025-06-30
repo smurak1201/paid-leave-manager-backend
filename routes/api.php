@@ -24,3 +24,4 @@ Route::get('/test', function () {
 Route::get('/api/test', function () {
     return response()->json(['message' => 'API Test route working']);
 });
+Route::post('/api/employees', [App\Http\Controllers\EmployeesController::class, 'handleMode']);
