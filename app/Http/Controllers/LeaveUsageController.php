@@ -192,14 +192,30 @@ class LeaveUsageController extends Controller
             $last_days = (int)$last_row['days'];
             $first_last_grant = clone $start;
             $first_last_grant->modify('+' . $last_months . ' months');
-            while ($first_last_grant <= $now) {
-                $grants[] = [
-                    'grant_date' => $first_last_grant->format('Y-m-d'),
-                    'days' => $last_days,
-                ];
-                $first_last_grant->modify('+1 year');
+            // 6.5年以降、毎年1回20日付与
+            $next_grant = clone $first_last_grant;
+            while ($next_grant <= $now) {
+                // 既存付与日と重複しない場合のみ追加
+                $exists = false;
+                foreach ($grants as $g) {
+                    if ($g['grant_date'] === $next_grant->format('Y-m-d')) {
+                        $exists = true;
+                        break;
+                    }
+                }
+                if (!$exists) {
+                    $grants[] = [
+                        'grant_date' => $next_grant->format('Y-m-d'),
+                        'days' => $last_days,
+                    ];
+                }
+                $next_grant->modify('+1 year');
             }
         }
+        // 付与日で昇順ソート
+        usort($grants, function ($a, $b) {
+            return strcmp($a['grant_date'], $b['grant_date']);
+        });
         return $grants;
     }
 }
