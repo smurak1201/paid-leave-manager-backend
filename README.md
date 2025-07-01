@@ -1,62 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 有給休暇管理アプリ（Laravel バックエンド）
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+このリポジトリは、日本の労働基準法・厚生労働省ガイドラインに準拠した有給休暇管理 Web アプリの API バックエンド（Laravel）です。従業員ごとの有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序などを自動計算し、フロントエンド（React/Vite）と連携します。
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## クイックスタート
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. `composer install` で依存パッケージをインストール
+2. `.env` 設定（DB 接続・APP_KEY 生成など）
+3. `php artisan migrate --seed` で DB 初期化・マスターデータ投入
+4. `php artisan serve` でローカル API サーバー起動
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 主な API 機能
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **従業員管理 API**
+    -   従業員の追加・編集・削除・一覧取得
+-   **有給休暇管理 API**
+    -   勤続年数に応じた有給付与日数の自動計算（正社員モデル・日本法令準拠）
+    -   有給取得日リストの追加・削除
+    -   有給消化・繰越・2 年時効消滅ロジック
+    -   最大保有日数 40 日、FIFO（先入れ先出し）消化順序に対応
+-   **バリデーション・エラーハンドリング**
+    -   リクエストバリデーション、重複・存在チェック、DB 例外処理
+-   **API 設計**
+    -   RESTful なエンドポイント設計
+    -   JSON レスポンス・エラー時のメッセージ統一
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 技術スタック
 
-## Laravel Sponsors
+-   Laravel 10+
+-   PHP 8.1+
+-   SQLite/MySQL/PostgreSQL（任意の DB）
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 主なファイル構成
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+-   `routes/api.php` : API ルーティング定義
+-   `app/Http/Controllers/LeaveUsageController.php` : 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック
+-   `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php` : モデル定義
+-   `database/seeders/LeaveGrantMasterSeeder.php` : 付与マスター初期データ
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 実装済みロジック（2025 年 7 月現在）
 
-## Code of Conduct
+-   勤続年数に応じた付与日数自動計算（正社員モデル）
+-   付与日ごとに 2 年の有効期限管理
+-   前回付与分の残日数（最大 20 日）を繰越
+-   最大保有日数 40 日（付与＋繰越の合計）
+-   FIFO（先入れ先出し）消化順序
+-   有効期限切れ分の自動失効
+-   日単位での有給取得・管理
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 未対応・追加実装が必要な主なロジック
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   年 5 日取得義務（2019 年法改正）
+-   出勤率 8 割判定による付与可否
+-   雇用形態別付与（パート・短時間労働者等）
+-   時間単位・半日単位有給
+-   付与基準日（入社日以外の基準日管理）
+-   失効日数の明示・管理
+-   特別休暇・その他休暇との区別
 
-## License
+これらの要件が必要な場合は、個別に追加実装が必要です。
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# paid-leave-manager-backend
+---
+
+## 学習・実務での活用ポイント
+
+-   コントローラ・モデル・バリデーション・業務ロジックの分離・設計コメントを参考に、Laravel API 設計・法令準拠ロジックの実装例として活用できます。
+-   詳細は `backend_learning_guide.md` を参照してください。
+
+---
+
+## ライセンス
+
+MIT
