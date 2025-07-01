@@ -8,12 +8,9 @@
 //   - 有給取得履歴の一覧取得
 //   - 有給取得日の追加・削除
 //   - 有給休暇の残日数・消化履歴サマリ計算
-//   - 日本の法制度（最大40日・FIFO消化・2年有効等）に準拠したロジック
-//
-// 【Laravel初心者向けポイント】
-// ・コントローラは「1つのリソース（例: 有給履歴）」ごとに作成し、APIルートから呼び出されます。
-// ・Request/Responseの型やバリデーション、DB操作、エラーハンドリングの基本例としても参考になります。
-// ・制度ロジックの詳細は showSummary メソッド内に実装されています。
+// 設計意図:
+//   - RESTfulなAPI設計のサンプル
+//   - バリデーション・エラーハンドリング・制度ロジック例
 // =====================================================
 
 namespace App\Http\Controllers;
@@ -24,17 +21,9 @@ use App\Models\LeaveGrantMaster;
 use Illuminate\Http\Request;
 use Exception;
 
-/**
- * LeaveUsageController
- * - 有給休暇の取得・消化履歴APIを担当
- * - 一覧取得・追加・削除・サマリ計算など
- * - 日本法令準拠のロジック例としても学習に最適
- */
 class LeaveUsageController extends Controller
 {
-  /**
-   * 有給取得履歴の一覧取得
-   */
+  // 有給取得履歴の一覧取得
   public function index()
   {
     try {
@@ -45,10 +34,7 @@ class LeaveUsageController extends Controller
     }
   }
 
-  /**
-   * 有給取得日の追加
-   * - バリデーション・重複チェック・DB登録
-   */
+  // 有給取得日の追加
   public function store(Request $request)
   {
     $validated = $request->validate([
@@ -81,31 +67,7 @@ class LeaveUsageController extends Controller
     }
   }
 
-  /**
-   * 有給取得日の更新
-   * - バリデーション・DB更新
-   */
-  public function update(Request $request, $id)
-  {
-    $validated = $request->validate([
-      'employee_id' => 'required|exists:employees,employee_id',
-      'used_date' => ['required', 'date', 'regex:/^\\d{4}-\\d{2}-\\d{2}$/'],
-    ]);
-    $employee = Employee::where('employee_id', $validated['employee_id'])->first();
-    if (!$employee) {
-      return response()->json(['error' => '存在しない従業員IDです'], 400);
-    }
-    $leaveUsage = LeaveUsage::findOrFail($id);
-    $leaveUsage->employee_id = $employee->id;
-    $leaveUsage->used_date = $validated['used_date'];
-    $leaveUsage->save();
-    return response()->json($leaveUsage);
-  }
-
-  /**
-   * 有給取得日の削除（RESTful: DELETE /leave-usages/{id}）
-   * @param int $id - 削除対象の有給消化履歴ID
-   */
+  // 有給取得日の削除（RESTful: id指定）
   public function destroy($id)
   {
     try {
