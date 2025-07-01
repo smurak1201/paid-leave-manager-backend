@@ -23,7 +23,7 @@
     -   有給消化・繰越・2 年時効消滅ロジック
     -   最大保有日数 40 日、FIFO（先入れ先出し）消化順序に対応
 -   **バリデーション・エラーハンドリング**
-    -   リクエストバリデーション、重複・存在チェック、DB 例外処理
+    -   FormRequest（例: EmployeeRequest）によるバリデーション共通化、重複・存在チェック、DB 例外処理
 -   **API 設計**
     -   RESTful なエンドポイント設計
     -   JSON レスポンス・エラー時のメッセージ統一
@@ -41,7 +41,9 @@
 ## 主なファイル構成
 
 -   `routes/api.php` : API ルーティング定義
+-   `app/Http/Controllers/EmployeeController.php` : 従業員 API 用コントローラ
 -   `app/Http/Controllers/LeaveUsageController.php` : 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック
+-   `app/Http/Requests/EmployeeRequest.php` : 従業員追加・編集用バリデーション共通化（FormRequest）
 -   `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php` : モデル定義
 -   `database/seeders/LeaveGrantMasterSeeder.php` : 付与マスター初期データ
 
@@ -75,7 +77,7 @@
 
 ## 学習・実務での活用ポイント
 
--   コントローラ・モデル・バリデーション・業務ロジックの分離・設計コメントを参考に、Laravel API 設計・法令準拠ロジックの実装例として活用できます。
+-   コントローラ・モデル・FormRequest（バリデーション）・業務ロジックの分離、冒頭の設計コメントを参考に、Laravel API 設計・法令準拠ロジックの実装例として活用できます。
 -   詳細は `backend_learning_guide.md` を参照してください。
 
 ---
