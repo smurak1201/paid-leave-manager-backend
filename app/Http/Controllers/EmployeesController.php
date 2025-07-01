@@ -46,7 +46,7 @@ class EmployeesController extends Controller
     // 従業員削除
     public function destroy($id)
     {
-        $employee = Employee::findOrFail($id);
+        $employee = Employee::where('employee_id', $id)->firstOrFail();
         $employee->delete();
         return response()->json(['result' => 'ok']);
     }
