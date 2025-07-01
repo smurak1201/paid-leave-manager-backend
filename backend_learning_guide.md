@@ -1,35 +1,81 @@
-# 有給休暇管理アプリ バックエンド（Laravel）学習ガイド
+# 有給休暇管理アプリ バックエンド（Laravel）超初心者向け学習ガイド
 
-このドキュメントは、当アプリのバックエンド（Laravel）側のソースコードを効率的に学ぶためのポイントや、読む順序のガイドです。PHP/Laravel の API 設計・業務ロジック・バリデーション・日本の有給休暇制度への対応状況を理解しましょう。
+---
+
+## はじめに：Laravel とは？
+
+Laravel（ララベル）は、PHP で作られた「Web アプリ開発用フレームワーク」です。
+
+-   **フレームワーク**とは…「便利な部品やルールが最初から用意されている開発の土台」のこと。
+-   Laravel を使うと、API や Web サービスを“効率よく・安全に・きれいに”作ることができます。
+
+このアプリのバックエンド（サーバー側）は、Laravel で作られています。
+
+---
+
+## MVC 構造とは？
+
+Laravel は「MVC」という設計パターンで作られています。
+
+-   **M（Model）**：データベースとやりとりする役割（例：従業員や有給履歴の情報）
+-   **V（View）**：画面表示の役割（このプロジェクトでは主にフロントエンドが担当）
+-   **C（Controller）**：リクエストを受けて処理を振り分ける役割（API の入口）
+
+このガイドでは、特に「Model」「Controller」「ルーティング（routes）」の役割と場所を意識しましょう。
+
+---
+
+## このプロジェクトの主なファイル・ディレクトリ構成
+
+-   `routes/api.php` … API の入り口。URL ごとにどのコントローラを呼ぶか決める場所
+-   `app/Http/Controllers/` … コントローラ（C）。API ごとの処理本体
+    -   例: `LeaveUsageController.php`（有給履歴 API）
+-   `app/Models/` … モデル（M）。データベースのテーブルと連携するクラス
+    -   例: `Employee.php`（従業員テーブル用）
+-   `database/seeders/` … シーダー。初期データを DB に自動投入する仕組み
+-   `config/cors.php` … CORS（フロントと API の通信許可）設定
+-   `bootstrap/app.php` … アプリ全体の初期化・起動設定
 
 ---
 
 ## 1. 学習時に意識すべきポイント
 
--   **責務分離**: コントローラ・モデル・ルーティングの役割分担を意識し、どこで何を担当しているかを把握しましょう。
--   **バリデーション**: リクエストバリデーション（`$request->validate`）やエラーハンドリングの実装方法を確認しましょう。
--   **業務ロジック**: 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、日本法令に即したロジックがどこでどう実装されているかを意識しましょう（`app/Http/Controllers/LeaveUsageController.php`）。
--   **API 設計**: RESTful なルーティング・リクエスト/レスポンス形式・エラー時の返却値設計を確認しましょう。
--   **モデル設計**: `Employee`, `LeaveUsage`, `LeaveGrantMaster` などのモデル構造・リレーション・fillable 設定を確認しましょう。
--   **保守性・拡張性**: コードの分割・命名・バリデーション共通化・例外処理の工夫を探しましょう。
--   **法令準拠ロジック**: 日本の有給休暇制度にどこまで対応しているか、未対応要件は何かを意識しましょう。
+-   **責務分離**：
+    -   ルート（routes）→ コントローラ（Controllers）→ モデル（Models）と役割が分かれています。
+    -   どのファイルが「何のために」存在するかを意識しましょう。
+-   **バリデーション**：
+    -   API に送られてくるデータが正しいかどうかを`$request->validate`でチェックします。
+    -   間違ったデータはエラーとして返します。
+-   **業務ロジック**：
+    -   有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、日本の法律に沿ったルールがどこでどう実装されているかを意識しましょう。
+    -   例：`app/Http/Controllers/LeaveUsageController.php`の`showSummary`関数など
+-   **API 設計**：
+    -   RESTful（リソースごとに URL と HTTP メソッドで操作を分ける）な設計になっています。
+    -   例：GET で一覧取得、POST で追加、DELETE で削除など
+-   **モデル設計**：
+    -   `Employee`, `LeaveUsage`, `LeaveGrantMaster`などのモデルは、DB テーブルと 1 対 1 で対応しています。
+    -   `$fillable`で「一括登録できるカラム」を指定します。
+-   **保守性・拡張性**：
+    -   コードの分割・命名・バリデーション共通化・例外処理の工夫を探しましょう。
+-   **法令準拠ロジック**：
+    -   日本の有給休暇制度にどこまで対応しているか、未対応要件は何かを意識しましょう。
 
 ---
 
-## 2. ソースコードを読むおすすめの順序
+## 2. ソースコードを読むおすすめの順序（初心者向け解説付き）
 
-1. **`routes/api.php`**
-    - API エンドポイントとコントローラの対応関係を把握。
-2. **`app/Http/Controllers/LeaveUsageController.php`**
-    - 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、主要な業務ロジックの実装を確認。
-    - showSummary/store/destroy/generateGrants などの関数ごとにロジックを追いましょう。
-3. **モデル**
-    - `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php`
-    - fillable, リレーション、DB 設計の意図を確認。
-4. **Seeder・マスターデータ**
-    - `database/seeders/LeaveGrantMasterSeeder.php` で付与マスターの内容を確認。
-5. **バリデーション・エラー処理**
-    - 各 API のバリデーション・例外処理・エラーレスポンス設計を確認。
+1.  **`routes/api.php`**
+    -   どんな API が用意されているか、URL とコントローラの対応関係をざっくり把握。
+    -   例：`/api/employees` → `EmployeesController`の`index`関数
+2.  **`app/Http/Controllers/LeaveUsageController.php`**
+    -   有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、主要な業務ロジックの実装を確認。
+    -   `showSummary`/`store`/`destroy`/`generateGrants`などの関数ごとに「何をしているか」を追いましょう。
+3.  **モデル（`app/Models/`）**
+    -   `Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php`の中身を見て、DB テーブルとの対応や`fillable`の意味を確認。
+4.  **Seeder・マスターデータ（`database/seeders/`）**
+    -   `LeaveGrantMasterSeeder.php`で、どんな初期データが投入されるかを確認。
+5.  **バリデーション・エラー処理**
+    -   各 API の`$request->validate`や、エラー時のレスポンス設計を確認。
 
 ---
 
