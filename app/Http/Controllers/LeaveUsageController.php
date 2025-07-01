@@ -54,8 +54,18 @@ class LeaveUsageController extends Controller
 
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'employee_id' => 'required|exists:employees,employee_id',
+            'used_date' => ['required', 'date', 'regex:/^\\d{4}-\\d{2}-\\d{2}$/'],
+        ]);
+        $employee = Employee::where('employee_id', $validated['employee_id'])->first();
+        if (!$employee) {
+            return response()->json(['error' => '存在しない従業員IDです'], 400);
+        }
         $leaveUsage = LeaveUsage::findOrFail($id);
-        $leaveUsage->update($request->all());
+        $leaveUsage->employee_id = $employee->id;
+        $leaveUsage->used_date = $validated['used_date'];
+        $leaveUsage->save();
         return response()->json($leaveUsage);
     }
 
@@ -165,6 +175,8 @@ class LeaveUsageController extends Controller
         $grants = [];
         $start = new \DateTime($joined_at);
         $now = new \DateTime($today);
+        $last_row = end($master);
+        reset($master);
         foreach ($master as $row) {
             $grant_date = clone $start;
             $grant_date->modify('+' . $row['months'] . ' months');
@@ -173,6 +185,20 @@ class LeaveUsageController extends Controller
                 'grant_date' => $grant_date->format('Y-m-d'),
                 'days' => (int)$row['days'],
             ];
+        }
+        // 78ヶ月（6.5年）以降は毎年20日付与
+        if ($last_row) {
+            $last_months = $last_row['months'];
+            $last_days = (int)$last_row['days'];
+            $first_last_grant = clone $start;
+            $first_last_grant->modify('+' . $last_months . ' months');
+            while ($first_last_grant <= $now) {
+                $grants[] = [
+                    'grant_date' => $first_last_grant->format('Y-m-d'),
+                    'days' => $last_days,
+                ];
+                $first_last_grant->modify('+1 year');
+            }
         }
         return $grants;
     }
