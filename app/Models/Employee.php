@@ -15,14 +15,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Employeeモデル
+ * - 従業員テーブルと連携し、従業員情報を管理
+ * - $fillableで一括代入可能なカラムを指定
+ * - Eloquentモデルの基本例
+ */
 class Employee extends Model
 {
-  protected $table = 'employees';
+    protected $table = 'employees';
 
-  protected $fillable = [
-    'employee_id',
-    'last_name',
-    'first_name',
-    'joined_at',
-  ];
+    protected $fillable = [
+        'employee_id',
+        'last_name',
+        'first_name',
+        'joined_at',
+    ];
 }

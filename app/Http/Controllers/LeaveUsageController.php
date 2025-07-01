@@ -24,8 +24,17 @@ use App\Models\LeaveGrantMaster;
 use Illuminate\Http\Request;
 use Exception;
 
+/**
+ * LeaveUsageController
+ * - 有給休暇の取得・消化履歴APIを担当
+ * - 一覧取得・追加・削除・サマリ計算など
+ * - 日本法令準拠のロジック例としても学習に最適
+ */
 class LeaveUsageController extends Controller
 {
+    /**
+     * 有給取得履歴の一覧取得
+     */
     public function index()
     {
         try {
@@ -36,6 +45,10 @@ class LeaveUsageController extends Controller
         }
     }
 
+    /**
+     * 有給取得日の追加
+     * - バリデーション・重複チェック・DB登録
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -68,6 +81,10 @@ class LeaveUsageController extends Controller
         }
     }
 
+    /**
+     * 有給取得日の更新
+     * - バリデーション・DB更新
+     */
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
@@ -85,6 +102,10 @@ class LeaveUsageController extends Controller
         return response()->json($leaveUsage);
     }
 
+    /**
+     * 有給取得日の削除
+     * - バリデーション・DB削除
+     */
     public function destroy(Request $request)
     {
         $validated = $request->validate([
@@ -105,6 +126,10 @@ class LeaveUsageController extends Controller
         }
     }
 
+    /**
+     * 有給休暇のサマリ情報取得
+     * - バリデーション・サマリ計算ロジック
+     */
     public function showSummary(Request $request)
     {
         $validated = $request->validate([
@@ -242,7 +267,11 @@ class LeaveUsageController extends Controller
         ], 200);
     }
 
-    // 付与日リスト生成関数
+    /**
+     * 付与日リスト生成関数
+     * - 入社日から今日までの付与日を計算
+     * - 6.5年以降は毎年20日付与
+     */
     private function generateGrants($joined_at, $today, $master)
     {
         $grants = [];

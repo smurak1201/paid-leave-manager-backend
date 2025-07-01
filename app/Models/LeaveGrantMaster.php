@@ -15,7 +15,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * LeaveGrantMasterモデル
+ * - 有給付与マスタテーブルと連携し、基準値を管理
+ * - $tableでテーブル名を指定
+ * - Eloquentモデルの基本例
+ */
 class LeaveGrantMaster extends Model
 {
-  protected $table = 'leave_grant_master';
+    protected $table = 'leave_grant_master';
 }
