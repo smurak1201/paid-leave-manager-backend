@@ -143,7 +143,12 @@ class LeaveUsageController extends Controller
                 $prev_remain = $remain;
             }
         }
-        $carry_over = min($prev_remain, 20);
+        $carry_over = 0;
+        if (count($grant_details) > 1) {
+            $carry_over = min($prev_remain, 20);
+        } else {
+            $carry_over = 0;
+        }
         $used_dates_valid = [];
         foreach ($grant_details as $g) {
             $used_dates_valid = array_merge($used_dates_valid, $g['used_dates']);
@@ -157,13 +162,65 @@ class LeaveUsageController extends Controller
         foreach ($grant_details as $g) {
             $total_granted += $g['days'];
         }
-        $remain = $total_granted - $used;
+        // 残日数計算用: 最新とその1つ前のgrant分のused_datesをユニーク化してカウント
+        $used_for_remain = 0;
+        $grant_count = count($grant_details);
+        if ($grant_count >= 2) {
+            $latest_used = $grant_details[$grant_count - 1]['used_dates'];
+            $prev_used = $grant_details[$grant_count - 2]['used_dates'];
+            $all_used = array_unique(array_merge($latest_used, $prev_used));
+            $used_for_remain = count($all_used);
+        } elseif ($grant_count === 1) {
+            $used_for_remain = count($grant_details[0]['used_dates']);
+        }
+        // 残日数は「今年の付与日数＋繰越日数」の合計が20日を超える場合は20日を上限とする
+        $max_remain = min($grant_this_year + $carry_over, 20);
+        $remain = $max_remain - $used_for_remain;
+
+        // FIFO消化順序・最大保有日数40日対応
+        // 1. grant_detailsを付与日昇順で並べる（既に昇順）
+        // 2. すべての消化日を昇順で取得
+        $all_grant_details = $grant_details;
+        $all_used_dates = [];
+        foreach ($grant_details as $g) {
+            $all_used_dates = array_merge($all_used_dates, $g['used_dates']);
+        }
+        $all_used_dates = array_values(array_unique($all_used_dates));
+        sort($all_used_dates);
+        // 3. 付与分ごとに消化日を古い順から割り当てていく
+        $fifo_remain = [];
+        $used_idx = 0;
+        foreach ($grant_details as $i => $g) {
+            $days = $g['days'];
+            $used = 0;
+            $used_dates = [];
+            while ($used_idx < count($all_used_dates) && $used < $days) {
+                $used_dates[] = $all_used_dates[$used_idx];
+                $used++;
+                $used_idx++;
+            }
+            $fifo_remain[] = $days - $used;
+        }
+        // 4. 有効期限切れ分を除外し、未消化分の合計を算出
+        $now = new \DateTime($today);
+        $total_remain = 0;
+        foreach ($grant_details as $i => $g) {
+            $expire = (new \DateTime($g['grant_date']))->modify('+2 years');
+            if ($now < $expire) {
+                $total_remain += $fifo_remain[$i];
+            }
+        }
+        // 5. 最大保有日数40日で制限
+        $remain = min($total_remain, 40);
+        // used（消化済み日数）は有効な消化日数
+        $used_valid = count($all_used_dates) - ($remain < 0 ? abs($remain) : 0);
+        if ($used_valid < 0) $used_valid = 0;
 
         return response()->json([
             'grantThisYear' => $grant_this_year,
             'carryOver' => $carry_over,
-            'used' => $used,
-            'remain' => $remain,
+            'used' => $used_valid,
+            'remain' => $remain < 0 ? 0 : $remain,
             'grantDetails' => $grant_details,
             'usedDates' => $used_dates_valid,
         ], 200);
