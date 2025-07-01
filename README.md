@@ -24,9 +24,11 @@
     -   最大保有日数 40 日、FIFO（先入れ先出し）消化順序に対応
 -   **バリデーション・エラーハンドリング**
     -   FormRequest（例: EmployeeRequest）によるバリデーション共通化、重複・存在チェック、DB 例外処理
+    -   API エラー・バリデーションエラーの統一レスポンス
 -   **API 設計**
-    -   RESTful なエンドポイント設計
+    -   RESTful なエンドポイント設計（従業員・有給取得日・付与マスター API すべて）
     -   JSON レスポンス・エラー時のメッセージ統一
+    -   CORS・ネットワーク・型整合性も考慮
 
 ---
 
@@ -41,11 +43,13 @@
 ## 主なファイル構成
 
 -   `routes/api.php` : API ルーティング定義
--   `app/Http/Controllers/EmployeeController.php` : 従業員 API 用コントローラ
+-   `app/Http/Controllers/EmployeesController.php` : 従業員 API 用コントローラ
 -   `app/Http/Controllers/LeaveUsageController.php` : 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック
+-   `app/Http/Controllers/LeaveGrantMasterController.php` : 付与マスター API コントローラ
 -   `app/Http/Requests/EmployeeRequest.php` : 従業員追加・編集用バリデーション共通化（FormRequest）
 -   `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php` : モデル定義
 -   `database/seeders/LeaveGrantMasterSeeder.php` : 付与マスター初期データ
+-   `backend_learning_guide.md` : Laravel バックエンド学習ガイド
 
 ---
 
@@ -58,6 +62,7 @@
 -   FIFO（先入れ先出し）消化順序
 -   有効期限切れ分の自動失効
 -   日単位での有給取得・管理
+-   API/型/コメントの統一・リファクタリング
 
 ---
 
