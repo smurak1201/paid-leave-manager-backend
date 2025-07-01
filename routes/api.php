@@ -1,5 +1,16 @@
 <?php
 
+// =============================
+// routes/api.php
+// -----------------------------
+// このファイルはLaravelの「APIルート」を定義します。
+// ここで定義したURLパス（例: /api/employees）は、
+// フロントエンドや外部からのAPIリクエストを受け付け、
+// 指定したコントローラのメソッドに処理を委譲します。
+// ルート定義の書き方や役割を理解することで、
+// バックエンドAPIの拡張や保守がしやすくなります。
+// =============================
+
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\LeaveGrantMasterController;
 use App\Http\Controllers\LeaveUsageController;
