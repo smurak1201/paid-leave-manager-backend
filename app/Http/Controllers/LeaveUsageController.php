@@ -13,7 +13,7 @@ class LeaveUsageController extends Controller
     public function index()
     {
         try {
-            $usages = LeaveUsage::orderBy('employee_id')->orderBy('used_date')->get();
+            $usages = LeaveUsage::orderBy('employee_id')->orderBy('used_date')->get(['employee_id', 'used_date']);
             return response()->json($usages, 200);
         } catch (Exception $e) {
             return response()->json(['error' => 'DBエラー: ' . $e->getMessage()], 500);
@@ -24,16 +24,28 @@ class LeaveUsageController extends Controller
     {
         $validated = $request->validate([
             'employee_id' => 'required|exists:employees,employee_id',
-            'used_date' => 'required|date',
+            'used_date' => ['required', 'date', 'regex:/^\d{4}-\d{2}-\d{2}$/'],
         ]);
 
         $employee = Employee::where('employee_id', $validated['employee_id'])->first();
+        if (!$employee) {
+            return response()->json(['error' => '存在しない従業員IDです'], 400);
+        }
         if ($validated['used_date'] < $employee->joined_at) {
             return response()->json(['error' => '消化日は入社日以降の日付を指定してください'], 400);
         }
-
+        // 重複チェック
+        $exists = LeaveUsage::where('employee_id', $employee->id)
+            ->where('used_date', $validated['used_date'])
+            ->exists();
+        if ($exists) {
+            return response()->json(['error' => 'この従業員のこの日は既に登録されています'], 400);
+        }
         try {
-            LeaveUsage::create($validated);
+            LeaveUsage::create([
+                'employee_id' => $employee->id,
+                'used_date' => $validated['used_date'],
+            ]);
             return response()->json(['result' => 'ok'], 201);
         } catch (Exception $e) {
             return response()->json(['error' => 'DBエラー: ' . $e->getMessage()], 500);
@@ -51,11 +63,14 @@ class LeaveUsageController extends Controller
     {
         $validated = $request->validate([
             'employee_id' => 'required|exists:employees,employee_id',
-            'used_date' => 'required|date',
+            'used_date' => ['required', 'date', 'regex:/^\d{4}-\d{2}-\d{2}$/'],
         ]);
-
+        $employee = Employee::where('employee_id', $validated['employee_id'])->first();
+        if (!$employee) {
+            return response()->json(['error' => '存在しない従業員IDです'], 400);
+        }
         try {
-            LeaveUsage::where('employee_id', $validated['employee_id'])
+            LeaveUsage::where('employee_id', $employee->id)
                 ->where('used_date', $validated['used_date'])
                 ->delete();
             return response()->json(['result' => 'ok'], 200);
