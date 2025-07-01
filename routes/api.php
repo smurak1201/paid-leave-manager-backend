@@ -24,15 +24,13 @@ Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
 // 有給付与マスター
 Route::get('/leave-grant-master', [LeaveGrantMasterController::class, 'index']);
 
-// 有給取得履歴
-Route::get('/leave-usages', [LeaveUsageController::class, 'index']);
-Route::post('/leave-usages', [LeaveUsageController::class, 'store']);
-Route::post('/leave-usages/add', [LeaveUsageController::class, 'store']);
-Route::delete('/leave-usages', [LeaveUsageController::class, 'destroy']);
-Route::post('/leave-usages/delete', [LeaveUsageController::class, 'destroy']);
+// 有給取得履歴 RESTful API
+Route::get('/leave-usages', [LeaveUsageController::class, 'index']); // 一覧取得
+Route::post('/leave-usages', [LeaveUsageController::class, 'store']); // 追加
+Route::delete('/leave-usages/{id}', [LeaveUsageController::class, 'destroy']); // id指定で削除
 Route::get('/leave-summary', [LeaveUsageController::class, 'showSummary']);
 
 // テスト用
 Route::get('/test', function () {
-    return response()->json(['message' => 'Test route working']);
+  return response()->json(['message' => 'Test route working']);
 });
