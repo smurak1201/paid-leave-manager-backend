@@ -46,6 +46,13 @@ class EmployeesController extends Controller
             return response()->json(['message' => '権限がありません'], 403);
         }
         $employee = Employee::create($request->validated());
+        // usersテーブルにも自動登録（パスワードはデフォルト: 'password'）
+        \App\Models\User::create([
+            'login_id' => $employee->employee_id,
+            'password' => bcrypt('password'),
+            'role' => 'viewer',
+            'employee_id' => $employee->employee_id,
+        ]);
         return response()->json(['result' => 'ok', 'employee' => $employee]);
     }
 
@@ -69,6 +76,8 @@ class EmployeesController extends Controller
             return response()->json(['message' => '権限がありません'], 403);
         }
         $employee = Employee::where('employee_id', $id)->firstOrFail();
+        // usersテーブルからも削除
+        \App\Models\User::where('employee_id', $employee->employee_id)->delete();
         $employee->delete();
         return response()->json(['result' => 'ok']);
     }
