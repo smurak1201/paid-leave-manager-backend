@@ -1,3 +1,7 @@
+use App\Http\Controllers\AuthController;
+// 認証API
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 <?php
 
 // =============================
