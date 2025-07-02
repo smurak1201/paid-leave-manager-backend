@@ -14,11 +14,10 @@ return new class extends Migration
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
-                $table->string('name');
-                $table->string('email')->unique();
-                $table->timestamp('email_verified_at')->nullable();
+                $table->unsignedBigInteger('login_id')->unique(); // ログインID（数字、管理者は0000、閲覧用は従業員コード）
                 $table->string('password');
-                $table->rememberToken();
+                $table->string('role')->default('viewer'); // 'admin' or 'viewer'
+                $table->unsignedBigInteger('employee_id')->nullable()->unique(); // 閲覧用ユーザーのみ従業員コードを紐付け、管理者はnull
                 $table->timestamps();
             });
         }
