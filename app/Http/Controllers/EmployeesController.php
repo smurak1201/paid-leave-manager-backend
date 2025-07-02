@@ -38,24 +38,36 @@ class EmployeesController extends Controller
         return response()->json($employees);
     }
 
-    // 従業員追加
+    // 従業員追加（管理者のみ許可）
     public function store(EmployeeRequest $request)
     {
+        $user = $request->user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => '権限がありません'], 403);
+        }
         $employee = Employee::create($request->validated());
         return response()->json(['result' => 'ok', 'employee' => $employee]);
     }
 
-    // 従業員編集
+    // 従業員編集（管理者のみ許可）
     public function update(EmployeeRequest $request, $id)
     {
+        $user = $request->user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => '権限がありません'], 403);
+        }
         $employee = Employee::findOrFail($id);
         $employee->update($request->validated());
         return response()->json(['result' => 'ok', 'employee' => $employee]);
     }
 
-    // 従業員削除
+    // 従業員削除（管理者のみ許可）
     public function destroy($id)
     {
+        $user = request()->user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => '権限がありません'], 403);
+        }
         $employee = Employee::where('employee_id', $id)->firstOrFail();
         $employee->delete();
         return response()->json(['result' => 'ok']);
