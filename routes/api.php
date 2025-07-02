@@ -20,7 +20,7 @@ use App\Http\Controllers\LeaveGrantMasterController;
 use App\Http\Controllers\LeaveUsageController;
 
 // 従業員APIはEmployeesControllerに統一
-Route::get('/employees', [EmployeesController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/employees', [EmployeesController::class, 'index']);
 Route::post('/employees', [EmployeesController::class, 'store']);
 Route::put('/employees/{id}', [EmployeesController::class, 'update']);
 Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
@@ -36,5 +36,5 @@ Route::get('/leave-summary', [LeaveUsageController::class, 'showSummary']);
 
 // テスト用
 Route::get('/test', function () {
-  return response()->json(['message' => 'Test route working']);
+    return response()->json(['message' => 'Test route working']);
 });

@@ -21,10 +21,20 @@ use App\Http\Requests\EmployeeRequest;
 
 class EmployeesController extends Controller
 {
-    // 従業員一覧取得
-    public function index()
+    // 権限制御付き 従業員一覧取得
+    public function index(Request $request)
     {
-        $employees = Employee::all();
+        $user = $request->user();
+        if ($user->role === 'admin') {
+            // 管理者は全件取得
+            $employees = Employee::all();
+        } elseif ($user->role === 'viewer' && $user->employee_id) {
+            // 閲覧ユーザーは自分の従業員データのみ
+            $employees = Employee::where('employee_id', $user->employee_id)->get();
+        } else {
+            // 権限なし
+            return response()->json(['message' => '権限がありません'], 403);
+        }
         return response()->json($employees);
     }
 
