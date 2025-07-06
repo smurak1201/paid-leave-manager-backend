@@ -11,11 +11,12 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        // APIリクエスト（api/*）は401 Unauthorizedを返す
-        if ($request->is('api/*') || $request->expectsJson()) {
+        // APIリクエストやJSONリクエスト時は401 Unauthorizedのみ返す
+        if ($request->expectsJson() || $request->is('api/*')) {
             return null;
         }
-        // Webアクセス時のみloginルートへ（必要なら）
-        return route('login');
+        // Webアクセス時のみloginルートへ（必要な場合のみ）
+        // return route('login');
+        return null; // loginルート未定義のため常にnull返却
     }
 }

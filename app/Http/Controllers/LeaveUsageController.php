@@ -38,7 +38,7 @@ class LeaveUsageController extends Controller
                 if (!$employee) {
                     return response()->json([], 200);
                 }
-                $usages = LeaveUsage::where('employee_id', $employee->id)->orderBy('used_date')->get(['id', 'employee_id', 'used_date']);
+                $usages = LeaveUsage::where('employee_id', $employee->employee_id)->orderBy('used_date')->get(['id', 'employee_id', 'used_date']);
             } else {
                 return response()->json(['message' => '権限がありません'], 403);
             }
