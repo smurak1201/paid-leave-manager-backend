@@ -43,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // テスト用
+
+// CORS動作確認用プリフライトテストルート
+Route::options('/cors-test', function () {
+    return response()->json(['ok' => true]);
+});
+
 Route::get('/test', function () {
     return response()->json(['message' => 'Test route working']);
 });
