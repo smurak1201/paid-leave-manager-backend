@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'login_id' => 0, // 管理者用の例
+            'role' => 'admin',
         ]);
     }
 }
