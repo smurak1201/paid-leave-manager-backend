@@ -9,7 +9,7 @@ class Authenticate extends Middleware
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      */
-    protected function redirectTo($request): ?string
+    protected function redirectTo($request)
     {
         // APIリクエスト（api/*）は401 Unauthorizedを返す
         if ($request->is('api/*') || $request->expectsJson()) {
