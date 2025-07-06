@@ -69,7 +69,7 @@ class LeaveUsageController extends Controller
             return response()->json(['error' => '消化日は入社日以降の日付を指定してください'], 400);
         }
         // 重複チェック
-        $exists = LeaveUsage::where('employee_id', $employee->id)
+        $exists = LeaveUsage::where('employee_id', $employee->employee_id)
             ->where('used_date', $validated['used_date'])
             ->exists();
         if ($exists) {
@@ -77,7 +77,7 @@ class LeaveUsageController extends Controller
         }
         try {
             LeaveUsage::create([
-                'employee_id' => $employee->id,
+                'employee_id' => $employee->employee_id,
                 'used_date' => $validated['used_date'],
             ]);
             return response()->json(['result' => 'ok'], 201);
@@ -124,7 +124,7 @@ class LeaveUsageController extends Controller
         if (!$employee) {
             return response()->json(['error' => '従業員が見つかりません'], 404);
         }
-        $usage_dates = LeaveUsage::where('employee_id', $employee->id)->orderBy('used_date')->pluck('used_date')->toArray();
+        $usage_dates = LeaveUsage::where('employee_id', $employee->employee_id)->orderBy('used_date')->pluck('used_date')->toArray();
         $master = LeaveGrantMaster::orderBy('months')->get(['months', 'days'])->toArray();
 
         $today = date('Y-m-d');
