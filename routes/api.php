@@ -1,7 +1,5 @@
-use App\Http\Controllers\AuthController;
-// 認証API
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+
 <?php
 
 // =============================
@@ -15,9 +13,14 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 // バックエンドAPIの拡張や保守がしやすくなります。
 // =============================
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\LeaveGrantMasterController;
 use App\Http\Controllers\LeaveUsageController;
+
+// 認証API
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 // 従業員APIはEmployeesControllerに統一
 Route::middleware('auth:sanctum')->get('/employees', [EmployeesController::class, 'index']);
