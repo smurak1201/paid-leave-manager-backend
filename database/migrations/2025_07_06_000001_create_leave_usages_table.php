@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('leave_usage', function (Blueprint $table) {
             $table->id();
-            // 業務ID（employees.employee_id）を参照
-            $table->unsignedInteger('employee_id');
+            // 業務ID（employees.employee_id）を参照（varchar型で統一）
+            $table->string('employee_id', 255);
             $table->date('used_date');
             $table->timestamps();
             // 外部キー制約（業務ID）
