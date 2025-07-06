@@ -44,6 +44,7 @@ class LeaveUsageController extends Controller
             }
             return response()->json($usages, 200);
         } catch (Exception $e) {
+            \Log::error('LeaveUsage index error: ' . $e->getMessage());
             return response()->json(['error' => 'DBエラー: ' . $e->getMessage()], 500);
         }
     }
