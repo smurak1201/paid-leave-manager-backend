@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('leave_usage', function (Blueprint $table) {
+        Schema::create('leave_usages', function (Blueprint $table) {
             $table->id();
             // 業務ID（employees.employee_id）を参照（varchar型で統一）
             $table->string('employee_id', 255);
@@ -29,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('leave_usage');
+        Schema::dropIfExists('leave_usages');
     }
 };
