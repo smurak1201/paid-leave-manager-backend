@@ -13,6 +13,7 @@
 //   - バリデーション・エラーハンドリング・制度ロジック例
 // =====================================================
 
+
 namespace App\Http\Controllers;
 
 use App\Models\LeaveUsage;
