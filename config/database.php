@@ -46,7 +46,7 @@ return [
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'paid_leave_manager'),
             'username' => env('DB_USERNAME', 'plm_user'),
-            'password' => env('DB_PASSWORD', 'wP[X[dY5UekZ_XWj'),
+            'password' => env('DB_PASSWORD', 'p@ssw0rd'),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
