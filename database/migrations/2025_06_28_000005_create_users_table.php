@@ -13,9 +13,10 @@ return new class extends Migration
     {
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
-                // employee_idを主キーとして利用し、passwordのみを持つ
+                // employee_idを主キーとして利用し、passwordとroleを持つ
                 $table->unsignedBigInteger('employee_id')->primary();
                 $table->string('password');
+                $table->string('role')->default('viewer'); // 管理者/閲覧者区分
                 $table->timestamps();
             });
         }
