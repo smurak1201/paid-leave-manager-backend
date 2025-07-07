@@ -13,7 +13,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Employeeモデル
@@ -21,8 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * - $fillableで一括代入可能なカラムを指定
  * - Eloquentモデルの基本例
  */
-class Employee extends Model
+class Employee extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $table = 'employees';
 
     protected $fillable = [
@@ -30,5 +33,11 @@ class Employee extends Model
         'last_name',
         'first_name',
         'joined_at',
+        'password',
+        'role',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 }
