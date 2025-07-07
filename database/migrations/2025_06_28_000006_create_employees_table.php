@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('employee_id')->unique();
+            $table->unsignedBigInteger('employee_id')->unique();
             $table->string('last_name');
             $table->string('first_name');
             $table->date('joined_at');
+            $table->string('password');
+            $table->string('role')->default('viewer');
+            $table->rememberToken()->nullable();
             $table->timestamps();
         });
     }
