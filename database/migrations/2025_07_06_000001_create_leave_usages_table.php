@@ -5,30 +5,28 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('leave_usages', function (Blueprint $table) {
-            $table->id();
-            // 業務ID（employees.employee_id）を参照（varchar型で統一）
-            $table->string('employee_id', 255);
-            $table->date('used_date');
-            $table->timestamps();
-            // 外部キー制約（業務ID）
-            $table->foreign('employee_id')
-                ->references('employee_id')
-                ->on('employees')
-                ->onDelete('cascade');
-        });
-    }
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('leave_usages', function (Blueprint $table) {
+      $table->id();
+      $table->string('employee_id', 32);
+      $table->date('used_date');
+      $table->timestamps();
+      $table->foreign('employee_id')
+        ->references('employee_id')
+        ->on('employees')
+        ->onDelete('cascade');
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('leave_usages');
-    }
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('leave_usages');
+  }
 };

@@ -10,11 +10,10 @@ class CreateLeaveUsagesTable extends Migration
   {
     Schema::create('leave_usages', function (Blueprint $table) {
       $table->id();
-      $table->unsignedBigInteger('employee_id');
+      $table->string('employee_id', 32);
       $table->date('used_date');
       $table->timestamps();
-
-      $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+      $table->foreign('employee_id')->references('employee_id')->on('employees')->onDelete('cascade');
     });
   }
 

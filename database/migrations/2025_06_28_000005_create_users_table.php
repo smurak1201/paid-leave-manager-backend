@@ -11,15 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('users')) {
-            Schema::create('users', function (Blueprint $table) {
-                // employee_idを主キーとして利用し、passwordとroleを持つ
-                $table->unsignedBigInteger('employee_id')->primary();
-                $table->string('password');
-                $table->string('role')->default('viewer'); // 管理者/閲覧者区分
-                $table->timestamps();
-            });
-        }
+        // usersテーブルは不要なため、作成処理を削除
 
         if (!Schema::hasTable('password_reset_tokens')) {
             Schema::create('password_reset_tokens', function (Blueprint $table) {

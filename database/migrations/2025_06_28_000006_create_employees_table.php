@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('employee_id')->unique();
+            $table->string('employee_id', 32)->primary(); // 文字列型の主キー
             $table->string('last_name');
             $table->string('first_name');
             $table->date('joined_at');
