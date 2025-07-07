@@ -14,7 +14,7 @@ class AdminEmployeeSeeder extends Seeder
     public function run(): void
     {
         DB::table('employees')->insert([
-            'employee_id' => 0,
+            'employee_id' => 0000,
             'last_name' => '管理',
             'first_name' => '者',
             'joined_at' => now(),
