@@ -13,15 +13,9 @@ return new class extends Migration
     {
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('email')->unique();
-                $table->timestamp('email_verified_at')->nullable();
+                // employee_idを主キーとして利用し、passwordのみを持つ
+                $table->unsignedBigInteger('employee_id')->primary();
                 $table->string('password');
-                $table->string('role')->default('viewer');
-                $table->unsignedBigInteger('login_id')->unique();
-                $table->unsignedBigInteger('employee_id')->nullable()->unique();
-                $table->rememberToken();
                 $table->timestamps();
             });
         }
