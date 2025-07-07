@@ -34,13 +34,15 @@ class EmployeeRequest extends FormRequest
         // idがルートパラメータにあれば「更新」、なければ「新規登録」
         $id = $this->route('id');
         return [
-            // 更新時は自分自身のemployee_idを除外
+            // employee_idはstring型・英数字記号可・最大20文字程度を推奨
             'employee_id' => [
                 'required',
+                'string',
+                'max:20',
                 'unique:employees,employee_id' . ($id ? ",{$id}" : ''),
             ],
-            'last_name' => 'required',
-            'first_name' => 'required',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
             'joined_at' => 'required|date',
         ];
     }
