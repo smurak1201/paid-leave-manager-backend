@@ -60,7 +60,8 @@ class EmployeesController extends Controller
         if ($user->role !== 'admin') {
             return response()->json(['message' => '権限がありません'], 403);
         }
-        $employee = Employee::findOrFail($id);
+        $employee_id = $request->route('employee_id');
+        $employee = Employee::findOrFail($employee_id);
         $data = $request->validated();
         // パスワードが送信されていればハッシュ化して更新
         if (!empty($data['password'])) {
@@ -83,9 +84,12 @@ class EmployeesController extends Controller
         if ($user->role !== 'admin') {
             return response()->json(['message' => '権限がありません'], 403);
         }
-        $employee = Employee::where('employee_id', $id)->firstOrFail();
-        // usersテーブルからも削除
-        \App\Models\User::where('employee_id', $employee->employee_id)->delete();
+        $employee_id = $id;
+        $employee = Employee::findOrFail($employee_id);
+        // usersテーブルからも削除（不要なら削除可）
+        if (class_exists('App\\Models\\User')) {
+            \App\Models\User::where('employee_id', $employee->employee_id)->delete();
+        }
         $employee->delete();
         return response()->json(['result' => 'ok']);
     }

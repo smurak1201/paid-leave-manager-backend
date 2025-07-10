@@ -24,10 +24,10 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::middleware('auth:sanctum')->get('/employees', [EmployeesController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    // 従業員API
+    // 従業員API（主キーはemployee_id）
     Route::post('/employees', [EmployeesController::class, 'store']);
-    Route::put('/employees/{id}', [EmployeesController::class, 'update']);
-    Route::delete('/employees/{id}', [EmployeesController::class, 'destroy']);
+    Route::put('/employees/{employee_id}', [EmployeesController::class, 'update']);
+    Route::delete('/employees/{employee_id}', [EmployeesController::class, 'destroy']);
 
     // 有給付与マスター
     Route::get('/leave-grant-master', [LeaveGrantMasterController::class, 'index']);
