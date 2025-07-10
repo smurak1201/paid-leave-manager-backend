@@ -85,10 +85,7 @@ class EmployeesController extends Controller
             return response()->json(['message' => '権限がありません'], 403);
         }
         $employee = Employee::findOrFail($employee_id);
-        // usersテーブルからも削除（不要なら削除可）
-        if (class_exists('App\\Models\\User')) {
-            \App\Models\User::where('employee_id', $employee->employee_id)->delete();
-        }
+        // usersテーブルからの削除処理は不要（usersテーブル廃止済み）
         $employee->delete();
         return response()->json(['result' => 'ok']);
     }
