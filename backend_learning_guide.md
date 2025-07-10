@@ -29,11 +29,13 @@ Laravel は「MVC」という設計パターンで作られています。
 
 -   `routes/api.php` … API の入り口。URL ごとにどのコントローラを呼ぶか決める場所
 -   `app/Http/Controllers/` … コントローラ（C）。API ごとの処理本体
-    -   例: `LeaveUsageController.php`（有給履歴 API）、`EmployeeController.php`（従業員 API）
+-   例: `LeaveUsageController.php`（有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック）、`EmployeesController.php`（従業員管理 API）
 -   `app/Models/` … モデル（M）。データベースのテーブルと連携するクラス
-    -   例: `Employee.php`（従業員テーブル用）、`LeaveUsage.php`、`LeaveGrantMaster.php`
+    -   例: `Employee.php`（従業員テーブル用）、`LeaveUsage.php`（有給履歴）、`LeaveGrantMaster.php`（付与マスター）
 -   `app/Http/Requests/EmployeeRequest.php` … バリデーション共通化用 FormRequest（従業員追加・編集）
--   `database/seeders/LeaveGrantMasterSeeder.php` … シーダー。初期データを DB に自動投入する仕組み
+-   `database/seeders/LeaveGrantMasterSeeder.php` … 付与マスター初期データ投入用 Seeder
+-   `database/migrations/` … テーブル構造定義（従業員・有給・付与マスター）
+-   `sample/` … サンプル API・ダミーデータ（本番未使用、不要なら削除可）
 -   `config/cors.php` … CORS（フロントと API の通信許可）設定
 -   `bootstrap/app.php` … アプリ全体の初期化・起動設定
 
@@ -50,18 +52,21 @@ Laravel は「MVC」という設計パターンで作られています。
     -   FormRequest を使うことでバリデーションルールをコントローラから分離し、再利用性・可読性が向上します。
 -   **業務ロジック**：
     -   有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、日本の法律に沿ったルールがどこでどう実装されているかを意識しましょう。
-    -   例：`app/Http/Controllers/LeaveUsageController.php`の`showSummary`関数など
+    -   例：`app/Http/Controllers/LeaveUsageController.php`の`showSummary`や`store`、`generateGrants`関数など
 -   **API 設計**：
     -   RESTful（リソースごとに URL と HTTP メソッドで操作を分ける）な設計になっています。
-    -   例：GET で一覧取得、POST で追加、DELETE で削除など
+    -   例：GET で一覧取得、POST で追加、DELETE で削除など。全 API は `routes/api.php` に集約されています。
 -   **モデル設計**：
     -   `Employee`, `LeaveUsage`, `LeaveGrantMaster`などのモデルは、DB テーブルと 1 対 1 で対応しています。
     -   `$fillable`で「一括登録できるカラム」を指定します。
+    -   モデルごとに設計コメント・型定義・責務分離が徹底されています。
 -   **保守性・拡張性**：
     -   コードの分割・命名・バリデーション共通化・例外処理の工夫を探しましょう。
     -   各ファイルの冒頭コメントで「役割・設計意図・使い方」を明示し、学習・保守性を高めています。
+    -   不要なサンプルファイル（`sample/`）は本番未使用。整理・削除も推奨。
 -   **法令準拠ロジック**：
     -   日本の有給休暇制度にどこまで対応しているか、未対応要件は何かを意識しましょう。
+    -   実装済み・未対応ロジックは README.md も参照。
 
 ---
 
@@ -70,17 +75,20 @@ Laravel は「MVC」という設計パターンで作られています。
 1.  **`routes/api.php`**
     -   どんな API が用意されているか、URL とコントローラの対応関係をざっくり把握。
     -   例：`/api/employees` → `EmployeeController`の`index`関数
-2.  **`app/Http/Controllers/LeaveUsageController.php`・`EmployeeController.php`**
+2.  **`app/Http/Controllers/LeaveUsageController.php`・`EmployeesController.php`**
     -   有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序など、主要な業務ロジックの実装を確認。
     -   `showSummary`/`store`/`destroy`/`generateGrants`などの関数ごとに「何をしているか」を追いましょう。
 3.  **モデル（`app/Models/`）**
     -   `Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php`の中身を見て、DB テーブルとの対応や`fillable`の意味を確認。
 4.  **FormRequest（`app/Http/Requests/EmployeeRequest.php`）**
     -   バリデーションルールの共通化・再利用例として確認。
+    -   バリデーションエラー時のレスポンス設計も合わせて確認。
 5.  **Seeder・マスターデータ（`database/seeders/`）**
     -   `LeaveGrantMasterSeeder.php`で、どんな初期データが投入されるかを確認。
+    -   サンプル用 Seeder や未使用ファイルは整理・削除も検討。
 6.  **バリデーション・エラー処理**
     -   各 API の`$request->validate`や、エラー時のレスポンス設計を確認。
+    -   FormRequest を使ったバリデーション共通化・例外処理の流れも意識。
 
 ---
 
@@ -114,6 +122,7 @@ Laravel は「MVC」という設計パターンで作られています。
 -   新しい付与ルールや消化順序を追加してみる
 -   API レスポンス形式やエラー処理をカスタマイズしてみる
 -   モデル・Seeder・マスターデータを拡張してみる
+-   サンプル API・未使用ファイルの整理・削除を試してみる
 -   設計コメントを自分なりに書き換えてみることで、理解を深める
 
 ---
@@ -127,3 +136,4 @@ Laravel は「MVC」という設計パターンで作られています。
 ---
 
 このガイドを活用し、実務・学習の両面で役立つ Laravel/PHP バックエンド開発力を身につけてください！
+現状の設計コメント・型定義・責務分離の工夫もぜひ参考にしてください。
