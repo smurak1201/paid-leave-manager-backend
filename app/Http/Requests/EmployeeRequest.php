@@ -1,20 +1,22 @@
 <?php
+// =====================================================
+// EmployeeRequest.php
+// -----------------------------------------------------
+// 【有給休暇管理アプリ】従業員バリデーションFormRequest
+// -----------------------------------------------------
+// ▼主な役割
+//   - 従業員の追加・編集時のバリデーションを一元管理
+// ▼設計意図
+//   - コントローラから分離し保守性・再利用性向上
+// ▼使い方
+//   - コントローラのstore/updateで型指定するだけで自動適用
+//     例: public function store(EmployeeRequest $request)
+// =====================================================
 
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * EmployeeRequest（従業員バリデーション用FormRequest）
- * -----------------------------------------------------
- * - 従業員の追加・編集時のバリデーションを一元管理
- * - コントローラから分離することで保守性・再利用性向上
- * - Laravelのバリデーション共通化の基本例
- *
- * 【使い方】
- * - コントローラのstore/updateで型指定するだけで自動適用
- *   例: public function store(EmployeeRequest $request)
- */
 class EmployeeRequest extends FormRequest
 {
     /**
