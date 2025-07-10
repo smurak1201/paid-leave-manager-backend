@@ -61,7 +61,18 @@ class EmployeesController extends Controller
             return response()->json(['message' => '権限がありません'], 403);
         }
         $employee = Employee::findOrFail($id);
-        $employee->update($request->validated());
+        $data = $request->validated();
+        // パスワードが送信されていればハッシュ化して更新
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
+        }
+        // roleが送信されていれば更新
+        if (empty($data['role'])) {
+            unset($data['role']);
+        }
+        $employee->update($data);
         return response()->json(['result' => 'ok', 'employee' => $employee]);
     }
 

@@ -33,6 +33,7 @@ class EmployeeRequest extends FormRequest
     {
         // idがルートパラメータにあれば「更新」、なければ「新規登録」
         $id = $this->route('id');
+        $isUpdate = !empty($id);
         return [
             // employee_idはstring型・英数字記号可・最大20文字程度を推奨
             'employee_id' => [
@@ -44,10 +45,9 @@ class EmployeeRequest extends FormRequest
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
             'joined_at' => 'required|date',
-            // password: 8文字以上、string必須
-            'password' => 'required|string|min:8|max:255',
-            // role: adminまたはviewerのみ許可
-            'role' => 'required|string|in:admin,viewer',
+            // 新規登録時のみ必須、編集時はnullable
+            'password' => $isUpdate ? 'nullable|string|min:8|max:255' : 'required|string|min:8|max:255',
+            'role' => $isUpdate ? 'nullable|string|in:admin,viewer' : 'required|string|in:admin,viewer',
         ];
     }
 }
