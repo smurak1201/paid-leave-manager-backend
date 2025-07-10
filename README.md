@@ -1,6 +1,8 @@
 # 有給休暇管理アプリ（Laravel バックエンド）
 
-このリポジトリは、日本の労働基準法・厚生労働省ガイドラインに準拠した有給休暇管理 Web アプリの API バックエンド（Laravel）です。従業員ごとの有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序などを自動計算し、フロントエンド（React/Vite）と連携します。
+このリポジトリは、日本の労働基準法・厚生労働省ガイドラインに準拠した有給休暇管理 Web アプリの API バックエンド（Laravel）です。
+従業員ごとの有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序などのロジックを自動計算し、フロントエンド（React/Vite）と RESTful API で連携します。
+主要な業務ロジック・バリデーション・API 設計はすべて統一された設計コメント・型定義・責務分離に基づき実装されています。
 
 ---
 
@@ -40,22 +42,24 @@
 
 ---
 
-## 主なファイル構成
+## 主なファイル構成・役割
 
--   `routes/api.php` : API ルーティング定義
--   `app/Http/Controllers/EmployeesController.php` : 従業員 API 用コントローラ
--   `app/Http/Controllers/LeaveUsageController.php` : 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック
+-   `routes/api.php` : API ルーティング定義（全エンドポイント集約）
+-   `app/Http/Controllers/EmployeesController.php` : 従業員管理 API コントローラ
+-   `app/Http/Controllers/LeaveUsageController.php` : 有給付与・消化・繰越・時効消滅・最大保有日数・FIFO 消化順序ロジック（日本法令準拠）
 -   `app/Http/Controllers/LeaveGrantMasterController.php` : 付与マスター API コントローラ
--   `app/Http/Requests/EmployeeRequest.php` : 従業員追加・編集用バリデーション共通化（FormRequest）
--   `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php` : モデル定義
--   `database/seeders/LeaveGrantMasterSeeder.php` : 付与マスター初期データ
--   `backend_learning_guide.md` : Laravel バックエンド学習ガイド
+-   `app/Http/Requests/EmployeeRequest.php` : 従業員追加・編集用バリデーション（FormRequest）
+-   `app/Models/Employee.php`, `LeaveUsage.php`, `LeaveGrantMaster.php` : Eloquent モデル定義
+-   `database/seeders/LeaveGrantMasterSeeder.php` : 付与マスター初期データ投入用 Seeder
+-   `database/migrations/` : テーブル構造定義（従業員・有給・付与マスター）
+-   `sample/` : サンプル API・ダミーデータ（本番未使用、不要なら削除可）
+-   `backend_learning_guide.md` : Laravel バックエンド学習ガイド（設計意図・実装例解説）
 
 ---
 
 ## 実装済みロジック（2025 年 7 月現在）
 
--   勤続年数に応じた付与日数自動計算（正社員モデル）
+-   勤続年数に応じた有給付与日数の自動計算（正社員モデル、日本法令準拠）
 -   付与日ごとに 2 年の有効期限管理
 -   前回付与分の残日数（最大 20 日）を繰越
 -   最大保有日数 40 日（付与＋繰越の合計）
@@ -82,7 +86,8 @@
 
 ## 学習・実務での活用ポイント
 
--   コントローラ・モデル・FormRequest（バリデーション）・業務ロジックの分離、冒頭の設計コメントを参考に、Laravel API 設計・法令準拠ロジックの実装例として活用できます。
+-   コントローラ・モデル・FormRequest（バリデーション）・業務ロジックの分離、統一コメント・型定義・責務分離の実例として、Laravel API 設計・法令準拠ロジックの学習に最適です。
+-   設計コメントや型定義を参考に、実務・他プロジェクトへの応用も可能です。
 -   詳細は `backend_learning_guide.md` を参照してください。
 
 ---
