@@ -78,13 +78,12 @@ class EmployeesController extends Controller
     }
 
     // 従業員削除（管理者のみ許可）
-    public function destroy($id)
+    public function destroy($employee_id)
     {
         $user = request()->user();
         if ($user->role !== 'admin') {
             return response()->json(['message' => '権限がありません'], 403);
         }
-        $employee_id = $id;
         $employee = Employee::findOrFail($employee_id);
         // usersテーブルからも削除（不要なら削除可）
         if (class_exists('App\\Models\\User')) {
