@@ -21,64 +21,61 @@ use App\Http\Requests\EmployeeRequest;
 
 class EmployeesController extends Controller
 {
-    // 権限制御付き 従業員一覧取得
-    public function index(Request $request)
-    {
-        $user = $request->user();
-        if ($user->role === 'admin') {
-            // 管理者は全件取得
-            $employees = Employee::all();
-        } elseif ($user->role === 'viewer' && $user->employee_id) {
-            // 閲覧ユーザーは自分の従業員データのみ
-            $employees = Employee::where('employee_id', $user->employee_id)->get();
-        } else {
-            // 権限なし
-            return response()->json(['message' => '権限がありません'], 403);
-        }
-        return response()->json($employees);
+  // 権限制御付き 従業員一覧取得
+  public function index(Request $request)
+  {
+    $user = $request->user();
+    if ($user->role === 'admin') {
+      // 管理者は全件取得
+      $employees = Employee::all();
+    } elseif ($user->role === 'viewer' && $user->employee_id) {
+      // 閲覧ユーザーは自分の従業員データのみ
+      $employees = Employee::where('employee_id', $user->employee_id)->get();
+    } else {
+      // 権限なし
+      return response()->json(['message' => '権限がありません'], 403);
     }
+    return response()->json($employees);
+  }
 
-    // 従業員追加（管理者のみ許可）
-    public function store(EmployeeRequest $request)
-    {
-        $user = $request->user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => '権限がありません'], 403);
-        }
-        $employee = Employee::create($request->validated());
-        // usersテーブルにも自動登録（パスワードはデフォルト: 'password'）
-        \App\Models\User::create([
-            'login_id' => $employee->employee_id,
-            'password' => bcrypt('password'),
-            'role' => 'viewer',
-            'employee_id' => $employee->employee_id,
-        ]);
-        return response()->json(['result' => 'ok', 'employee' => $employee]);
+  // 従業員追加（管理者のみ許可）
+  public function store(EmployeeRequest $request)
+  {
+    $user = $request->user();
+    if ($user->role !== 'admin') {
+      return response()->json(['message' => '権限がありません'], 403);
     }
+    $validated = $request->validated();
+    // パスワードはハッシュ化して保存
+    $validated['password'] = bcrypt($validated['password']);
+    $employee = Employee::create($validated);
+    // usersテーブルへの登録処理は不要（廃止済み）
+    return response()->json(['result' => 'ok', 'employee' => $employee]);
+  }
 
-    // 従業員編集（管理者のみ許可）
-    public function update(EmployeeRequest $request, $id)
-    {
-        $user = $request->user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => '権限がありません'], 403);
-        }
-        $employee = Employee::findOrFail($id);
-        $employee->update($request->validated());
-        return response()->json(['result' => 'ok', 'employee' => $employee]);
+  // 従業員編集（管理者のみ許可）
+  public function update(EmployeeRequest $request, $id)
+  {
+    $user = $request->user();
+    if ($user->role !== 'admin') {
+      return response()->json(['message' => '権限がありません'], 403);
     }
+    $employee = Employee::findOrFail($id);
+    $employee->update($request->validated());
+    return response()->json(['result' => 'ok', 'employee' => $employee]);
+  }
 
-    // 従業員削除（管理者のみ許可）
-    public function destroy($id)
-    {
-        $user = request()->user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => '権限がありません'], 403);
-        }
-        $employee = Employee::where('employee_id', $id)->firstOrFail();
-        // usersテーブルからも削除
-        \App\Models\User::where('employee_id', $employee->employee_id)->delete();
-        $employee->delete();
-        return response()->json(['result' => 'ok']);
+  // 従業員削除（管理者のみ許可）
+  public function destroy($id)
+  {
+    $user = request()->user();
+    if ($user->role !== 'admin') {
+      return response()->json(['message' => '権限がありません'], 403);
     }
+    $employee = Employee::where('employee_id', $id)->firstOrFail();
+    // usersテーブルからも削除
+    \App\Models\User::where('employee_id', $employee->employee_id)->delete();
+    $employee->delete();
+    return response()->json(['result' => 'ok']);
+  }
 }

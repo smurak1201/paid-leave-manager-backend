@@ -44,6 +44,10 @@ class EmployeeRequest extends FormRequest
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
             'joined_at' => 'required|date',
+            // password: 8文字以上、string必須
+            'password' => 'required|string|min:8|max:255',
+            // role: adminまたはviewerのみ許可
+            'role' => 'required|string|in:admin,viewer',
         ];
     }
 }
